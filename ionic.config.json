@@ -1,0 +1,7 @@
+{
+  "name": "Personal-Trading",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
