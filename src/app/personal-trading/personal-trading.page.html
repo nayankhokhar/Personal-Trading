@@ -8,9 +8,9 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">personal-trading</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-item>
+    <input type="file" (change)="pickFile($event)" accept=".csv" multiple>
+  </ion-item>
+
+  <ion-button (click)="showAllData()">Show Data</ion-button>
 </ion-content>
