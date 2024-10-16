@@ -1,15 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { NseIndiaService } from '../services/nseindia.service';
+import * as Papa from 'papaparse';
+import * as _ from 'lodash';
+
 @Component({
   selector: 'app-personal-trading',
   templateUrl: './personal-trading.page.html',
   styleUrls: ['./personal-trading.page.scss'],
 })
 export class PersonalTradingPage implements OnInit {
+  private isAllFileProcessed = 0;
+
+  insiderTrading: any = [];          // CF-Insider-Trading-equities
+  insiderTradingFiltered: any = [];
+
   private shareholdingPatterns: any = [];    // CF-Shareholding-Pattern-equities
   private regulation29SAST: any = [];        // CF-SAST- Reg29
   private pledgedData: any = [];             // CF-SAST-Pledged-Data
-  private insiderTrading: any = [];          // CF-Insider-Trading-equities
 
 
   constructor(
@@ -21,6 +28,7 @@ export class PersonalTradingPage implements OnInit {
 
   pickFile(event: any) {
     const files: FileList = event.target.files;
+    this.isAllFileProcessed = 0;
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -30,47 +38,35 @@ export class PersonalTradingPage implements OnInit {
 
         reader.onload = (e) => {
           const text = reader.result as string;
-          // console.log("Test: ", text);
-
           this.convertCSVToJSON(text, file.name);
-        };
 
+          this.isAllFileProcessed++;
+          if (files.length === this.isAllFileProcessed) {
+            this.showAllData();
+          }
+        };
         reader.readAsText(file);
       }
     }
   }
 
   convertCSVToJSON(csvText: string, fileName: string) {
-    console.log("Name: ", fileName);
-
-    const lines = csvText.split('\n'); // Split the CSV into lines
-    const headers = lines[0].split(','); // Get the headers from the first row
-    const jsonArray = [];
-
-    for (let i = 1; i < lines.length; i++) {
-      const currentLine = lines[i].split(',');
-      const jsonObj: any = {};
-
-      // Skip empty lines
-      if (!lines[i]) continue;
-
-      // Map each value to the corresponding header
-      for (let j = 0; j < headers.length; j++) {
-        jsonObj[headers[j]] = currentLine[j];
+    Papa.parse(csvText, {
+      header: true, // Use the first row as headers
+      dynamicTyping: true, // Convert numbers and booleans automatically
+      skipEmptyLines: true, // Skip empty lines
+      complete: (result) => {
+        if (fileName.includes('CF-Insider-Trading-equities')) {
+          this.insiderTrading = result.data;
+        } else if (fileName.includes('CF-Shareholding-Pattern-equities')) {
+          this.shareholdingPatterns = result.data;
+        } else if (fileName.includes('CF-SAST- Reg29')) {
+          this.regulation29SAST = result.data;
+        } else if (fileName.includes('CF-SAST-Pledged-Data')) {
+          this.pledgedData = result.data;
+        }
       }
-
-      jsonArray.push(jsonObj);
-    }
-
-    if (fileName.includes('CF-Shareholding-Pattern-equities')) {
-      this.shareholdingPatterns = jsonArray;
-    } else if (fileName.includes('CF-SAST- Reg29')) {
-      this.regulation29SAST = jsonArray;
-    } else if (fileName.includes('CF-SAST-Pledged-Data')) {
-      this.pledgedData = jsonArray;
-    } else if (fileName.includes('CF-Insider-Trading-equities')) {
-      this.insiderTrading = jsonArray;
-    }
+    });
   }
 
   showAllData() {
@@ -78,6 +74,8 @@ export class PersonalTradingPage implements OnInit {
     console.log("Regulation29SAST: ", this.regulation29SAST);
     console.log("PledgedData: ", this.pledgedData);
     console.log("InsiderTrading: ", this.insiderTrading);
+
+    this.insiderTradingFiltered = _.filter(this.insiderTrading, item => ((item['CATEGORY OF PERSON \n'] == "Promoters" || item['CATEGORY OF PERSON \n'] == "Promoter Group") && item['MODE OF ACQUISITION \n'] == "Market Purchase"));
   }
 
   getIT() {
@@ -88,7 +86,7 @@ export class PersonalTradingPage implements OnInit {
     };
 
     this.nseIndiaService.getIT(params).subscribe(result => {
-      console.log(JSON.stringify(result));
+      // console.log(JSON.stringify(result));
     });
   }
 }

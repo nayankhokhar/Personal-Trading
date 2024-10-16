@@ -9,8 +9,15 @@
 
 <ion-content [fullscreen]="true">
   <ion-item>
-    <input type="file" (change)="pickFile($event)" accept=".csv" multiple>
+    <ion-label>Insider Trading: {{ insiderTrading.length }} - {{ insiderTradingFiltered.length }}</ion-label>
+    <!-- <ion-label>{{ insiderTrading[0] | json }}</ion-label> -->
   </ion-item>
-
-  <ion-button (click)="showAllData()">Show Data</ion-button>
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar class="ion-no-padding">
+    <input #fileInput type="file" (change)="pickFile($event)" accept=".csv" multiple hidden>
+    <ion-button expand="block" (click)="fileInput.click()" color="success" class="ion-no-margin">Select CSV
+      Files</ion-button>
+  </ion-toolbar>
+</ion-footer>
