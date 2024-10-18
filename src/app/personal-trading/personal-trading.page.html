@@ -12,6 +12,17 @@
     <ion-label>Insider Trading: {{ insiderTrading.length }} - {{ insiderTradingFiltered.length }}</ion-label>
     <!-- <ion-label>{{ insiderTrading[0] | json }}</ion-label> -->
   </ion-item>
+
+  <ion-list>
+    <ion-item *ngFor="let item of insiderTradingFiltered; let i = index">
+      <ion-label>
+        <h2>{{ i + 1 }}. {{ item.COMPANY }}</h2>
+        <p>Value of Security: {{ item['VALUE OF SECURITY (ACQUIRED/DISPLOSED) \n'] }}</p>
+        <p>Symbol: {{ item.symbol }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
 </ion-content>
 
 <ion-footer>

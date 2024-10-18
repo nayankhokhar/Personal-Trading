@@ -70,23 +70,27 @@ export class PersonalTradingPage implements OnInit {
   }
 
   showAllData() {
-    console.log("ShareholdingPatterns: ", this.shareholdingPatterns);
-    console.log("Regulation29SAST: ", this.regulation29SAST);
-    console.log("PledgedData: ", this.pledgedData);
     console.log("InsiderTrading: ", this.insiderTrading);
+    // console.log("ShareholdingPatterns: ", this.shareholdingPatterns);
+    // console.log("Regulation29SAST: ", this.regulation29SAST);
+    // console.log("PledgedData: ", this.pledgedData);
 
-    this.insiderTradingFiltered = _.filter(this.insiderTrading, item => ((item['CATEGORY OF PERSON \n'] == "Promoters" || item['CATEGORY OF PERSON \n'] == "Promoter Group") && item['MODE OF ACQUISITION \n'] == "Market Purchase"));
-  }
+    const marketPurchaseIsiderTrading = _.filter(this.insiderTrading, item => ((item['CATEGORY OF PERSON \n'] == "Promoters" || item['CATEGORY OF PERSON \n'] == "Promoter Group") && item['MODE OF ACQUISITION \n'] == "Market Purchase")
+    );
+    console.log("MarketPurchaseIsiderTrading: ", marketPurchaseIsiderTrading);
 
-  getIT() {
-    const params = {
-      index: "equities",
-      from_date: "9-07-2024",
-      to_date: "9-10-2024"
-    };
 
-    this.nseIndiaService.getIT(params).subscribe(result => {
-      // console.log(JSON.stringify(result));
-    });
+    this.insiderTradingFiltered = _(marketPurchaseIsiderTrading).groupBy('COMPANY \n').map((entries, company) => {
+      const totalValue = _.sumBy(entries, 'VALUE OF SECURITY (ACQUIRED/DISPLOSED) \n');
+      return {
+        symbol: entries[0]['SYMBOL \n'],
+        COMPANY: company,
+        "VALUE OF SECURITY (ACQUIRED/DISPLOSED) \n": totalValue,
+      };
+    }).orderBy('VALUE OF SECURITY (ACQUIRED/DISPLOSED) \n', 'desc').value();
+
+    console.log("InsiderTradingFilter: ", this.insiderTradingFiltered);
+    console.log("Sum: ", (1985000000+503255000+50325000+385425000+373950000));
+    
   }
 }
