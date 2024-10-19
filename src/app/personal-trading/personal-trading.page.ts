@@ -15,12 +15,11 @@ export class PersonalTradingPage implements OnInit {
   insiderTradingFiltered: any = [];
   shareholdingPatterns: any = [];    // CF-Shareholding-Pattern-equities
   shareholdingPatternsFiltered: any = [];
-  SASTReg29: any = [];        // CF-SAST- Reg29
+  SASTReg29: any = [];               // CF-SAST- Reg29
   SASTReg29Filtered: any = [];
   finalData: any = [];
-
-  private pledgedData: any = [];             // CF-SAST-Pledged-Data
-
+  pledgedData: any = [];             // CF-SAST-Pledged-Data
+  pledgedDataFiltered: any = [];
 
   constructor(
     private nseIndiaService: NseIndiaService
@@ -73,24 +72,15 @@ export class PersonalTradingPage implements OnInit {
   }
 
   showAllData() {
-    console.log("InsiderTrading: ", this.insiderTrading);
-    console.log("ShareholdingPatterns: ", this.shareholdingPatterns);
-    console.log("SASTReg29: ", this.SASTReg29);
-    // console.log("PledgedData: ", this.pledgedData);
-
     // Insider-Trading
     const marketPurchaseIsiderTrading = _.filter(this.insiderTrading, item => ((item['CATEGORY OF PERSON \n'] == "Promoters" || item['CATEGORY OF PERSON \n'] == "Promoter Group") && (item['MODE OF ACQUISITION \n'] == "Market Purchase" || item['MODE OF ACQUISITION \n'] == "Market Sale"))
     );
-    console.log("MarketPurchaseIsiderTrading: ", marketPurchaseIsiderTrading);
 
     const removeSellIsiderTrading = _.chain(marketPurchaseIsiderTrading)
       .groupBy('COMPANY \n')
       .filter(group => {
         return !_.some(group, { 'MODE OF ACQUISITION \n': 'Market Sale' });
       }).flatten().value();
-    console.log("RemoveSellIsiderTrading: ", removeSellIsiderTrading);
-
-
 
     this.insiderTradingFiltered = _(removeSellIsiderTrading).groupBy('COMPANY \n').map((entries, company) => {
       const totalPurchase = _.sumBy(entries, 'VALUE OF SECURITY (ACQUIRED/DISPLOSED) \n');
@@ -104,9 +94,8 @@ export class PersonalTradingPage implements OnInit {
         Average_Purchase: (totalPurchase / totalShare)
       };
     }).orderBy('VALUE OF SECURITY (ACQUIRED/DISPLOSED) \n', 'desc').value();
-    console.log("InsiderTradingFilteredAvg: ", this.insiderTradingFiltered);
 
-    //Shareholding-Patterns
+    // Shareholding-Patterns
     this.shareholdingPatternsFiltered = _.filter(this.insiderTradingFiltered, (insider: any) => {
       const matchingShareholder = _.find(this.shareholdingPatterns, { COMPANY: insider.COMPANY });
 
@@ -123,23 +112,29 @@ export class PersonalTradingPage implements OnInit {
         return true;
       }
     });
-    console.log("InsiderTradingFiltered: ", this.shareholdingPatternsFiltered);
 
-    //SAST-Reg29
-    this.SASTReg29Filtered = _(this.SASTReg29)
+    // SAST-Reg29
+    const SASTReg29SellData = _(this.SASTReg29)
       .groupBy('SYMBOL')
-      .map((items) => _.some(items, item => item['TOTAL AFTER ACQUISITION/SALE (SHARES/VOTING RIGHTS/WARRANTS/ CONVERTIBLE SECURITIES/ANY OTHER INSTRUMENT)'] > 1) && {
+      .map((items) => _.some(items, item => item['TOTAL SALE (SHARES/VOTING RIGHTS/WARRANTS/ CONVERTIBLE SECURITIES/ANY OTHER INSTRUMENT)'] > 1) && {
         SYMBOL: items[0].SYMBOL,
         selling: true
       })
       .compact()
       .value();
-    console.log("SASTReg29Filtered: ", this.SASTReg29Filtered);
 
-
-    this.finalData = _.filter(this.shareholdingPatternsFiltered, (insider) =>
-      !_.some(this.SASTReg29Filtered, { COMPANY: insider.COMPANY })
+    this.SASTReg29Filtered = _.filter(this.shareholdingPatternsFiltered, (insider) =>
+      !_.some(SASTReg29SellData, { COMPANY: insider.COMPANY })
     );
-    console.log("finalData: ", this.finalData);
+
+    // Pledged-Data
+    let pledgeFilter = _.filter(this.pledgedData, (item) => {
+      return item["PROMOTER SHARES ENCUMBERED AS OF LAST QUARTER % OF TOTAL SHARES [X/(A+B+C)]"] > 0;
+    });
+
+    this.pledgedDataFiltered = _.filter(this.SASTReg29Filtered, (item) => {
+      return !_.some(pledgeFilter, { 'NAME OF COMPANY': item.COMPANY });
+    });
+    console.log(this.pledgedDataFiltered);
   }
 }
