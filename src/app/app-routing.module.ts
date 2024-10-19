@@ -4,12 +4,7 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'personal-trading',
-    pathMatch: 'full'
-  },
-  {
-    path: 'personal-trading',
-    loadChildren: () => import('./personal-trading/personal-trading.module').then( m => m.PersonalTradingPageModule)
+    loadChildren: () => import('./personal-trading/personal-trading.module').then(m => m.PersonalTradingPageModule)
   }
 ];
 
@@ -19,4 +14,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
