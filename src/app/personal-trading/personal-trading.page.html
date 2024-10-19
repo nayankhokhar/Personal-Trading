@@ -23,19 +23,31 @@
   </ion-item>
 
   <ion-list>
-    <ion-item *ngFor="let item of pledgedDataFiltered; let i = index">
-      <ion-label>
-        <h2>{{ i + 1 }}. {{ item.COMPANY }}</h2>
-        <p>Total Share: {{ item['NO. OF SECURITIES (ACQUIRED/DISPLOSED) \n'] }}</p>
-        <p>Total Purchase: {{ item['VALUE OF SECURITY (ACQUIRED/DISPLOSED) \n'] }}</p>
-        <p>Avg. Purchase: {{ item['Average_Purchase'] }}</p>
-        <!-- <p>Symbol: {{ item.symbol }}</p> -->
-        <p>{{ item.inShareHolder? 'Promoters ShareHolding: ' + item.PromotersShareHolding: 'Data not found in
-          Share-Holder file'
-          }}</p>
-      </ion-label>
-    </ion-item>
+    <ion-card *ngFor="let item of pledgedDataFiltered; let i = index" color="medium"
+      style="margin: 5px; position: relative;">
+      <ion-icon name="copy-outline"
+        style="cursor: pointer; position: absolute; top: 10px; right: 10px; font-size: 20px; z-index: 10;"
+        (click)="copyToClipboard(item.COMPANY)"></ion-icon>
+      <ion-card-header style="padding: 5px;">
+        <ion-card-title style="font-size: 20px;">
+          {{ i + 1 }}. {{ item.COMPANY }}
+        </ion-card-title>
+        <!-- <ion-icon name="copy-outline" slot="end" (click)="copyToClipboard(item.COMPANY)"
+          style="cursor: pointer; margin-left: 10px;" aria-label="Copy to clipboard">
+        </ion-icon> -->
+      </ion-card-header>
+      <ion-card-content style="padding: 5px;">
+        <p style="font-weight: 700;">Total Share: {{ item['NO. OF SECURITIES (ACQUIRED/DISPLOSED) \n'] | number }}</p>
+        <p style="font-weight: 700;"> Total Purchase: {{ convertToCrores(item['VALUE OF SECURITY (ACQUIRED/DISPLOSED)
+          \n']) }}</p>
+        <p style="font-weight: 700;">Avg. Purchase: {{ item['Average_Purchase'] | number: '1.2-2' }}</p>
+        <p style="font-weight: 700;">{{ item.inShareHolder ? 'Promoters Share-Holding: ' + item.PromotersShareHolding :
+          'Data not found in
+          Share-Holding file' }}</p>
+      </ion-card-content>
+    </ion-card>
   </ion-list>
+
 </ion-content>
 
 <ion-footer>

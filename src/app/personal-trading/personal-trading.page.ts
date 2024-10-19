@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NseIndiaService } from '../services/nseindia.service';
 import * as Papa from 'papaparse';
 import * as _ from 'lodash';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-personal-trading',
@@ -22,7 +23,8 @@ export class PersonalTradingPage implements OnInit {
   pledgedDataFiltered: any = [];
 
   constructor(
-    private nseIndiaService: NseIndiaService
+    private nseIndiaService: NseIndiaService,
+    private toastController: ToastController
   ) { }
 
   ngOnInit() {
@@ -136,5 +138,28 @@ export class PersonalTradingPage implements OnInit {
       return !_.some(pledgeFilter, { 'NAME OF COMPANY': item.COMPANY });
     });
     console.log(this.pledgedDataFiltered);
+  }
+
+  convertToCrores(value: number): string {
+    const crores = value / 1e7; // 1 crore = 10 million
+    return crores.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Cr';
+  }
+
+  async copyToClipboard(companyName: string) {
+    // Create a temporary textarea element to hold the text
+    const textarea = document.createElement('textarea');
+    textarea.value = companyName;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy'); // Copy the text to the clipboard
+    document.body.removeChild(textarea); // Clean up the textarea element
+
+
+    const toast = await this.toastController.create({
+      message: companyName + " copied!",
+      duration: 1500,
+      position: "bottom",
+    });
+    await toast.present();
   }
 }
