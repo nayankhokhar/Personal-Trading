@@ -10,6 +10,8 @@ export class LoginPage implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    // localStorage.setItem("username", "test");
+    // localStorage.setItem("password", "test");
   }
 
 }
