@@ -47,6 +47,8 @@ export class PersonalTradingPage implements OnInit {
           this.isAllFileProcessed++;
           if (files.length === this.isAllFileProcessed) {
             this.showAllData();
+
+            event.target.value = '';
           }
         };
         reader.readAsText(file);
@@ -159,6 +161,7 @@ export class PersonalTradingPage implements OnInit {
       message: companyName + " copied!",
       duration: 1500,
       position: "bottom",
+      color: "dark"
     });
     await toast.present();
   }

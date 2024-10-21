@@ -6,13 +6,13 @@ import { GuestGuard } from './guest.guard';
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./personal-trading/personal-trading.module').then(m => m.PersonalTradingPageModule),
-    canActivate: [AuthGuard]
+    loadChildren: () => import('./personal-trading/personal-trading.module').then(m => m.PersonalTradingPageModule)
+    // canActivate: [AuthGuard]
   },
   {
     path: 'login',
-    loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule),
-    canActivate: [GuestGuard]
+    loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
+    // canActivate: [GuestGuard]
   }
 ];
 
