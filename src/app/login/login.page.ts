@@ -6,12 +6,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-
   constructor() { }
 
   ngOnInit() {
     // localStorage.setItem("username", "test");
     // localStorage.setItem("password", "test");
   }
-
 }
