@@ -1,7 +1,17 @@
-// For information on how to create your own theme, please see:
-// http://ionicframework.com/docs/theming/
-
 ion-button {
     text-transform: none;
     font-weight: 700;
+}
+
+.fs-24 {
+    font-size: 24px;
+}
+
+.color-grey {
+    color: grey;
+}
+
+.error-msg {
+    color: #ff5757;
+    margin-left: 4px;
 }
