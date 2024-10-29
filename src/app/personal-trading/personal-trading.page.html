@@ -1,5 +1,5 @@
 <ion-header [translucent]="true">
-  <ion-toolbar color="dark">
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
@@ -50,7 +50,7 @@
 <ion-footer>
   <ion-toolbar class="ion-no-padding">
     <input #fileInput type="file" (change)="pickFile($event)" accept=".csv" multiple hidden>
-    <ion-button expand="block" (click)="fileInput.click()" color="success" style="margin: 5px;">Select CSV
+    <ion-button expand="block" (click)="fileInput.click()" color="secondary" style="margin: 5px;" class="custom-text-color">Select CSV
       Files</ion-button>
   </ion-toolbar>
 </ion-footer>

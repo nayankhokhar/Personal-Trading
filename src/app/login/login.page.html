@@ -3,14 +3,14 @@
     <div class="col-lg-5 col-md-8 mx-auto mobile-width">
       <div class="card shadow-lg border-0 rounded-lg">
         <div class="card-header">
-          <h3 class="text-center font-weight-light my-4">Personal Trading</h3>
+          <h3 class="text-center font-weight-light my-4" style="color: var(--ion-color-primary);">Personal Trading</h3>
         </div>
         <div class="card-body p-2">
           <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
             <ion-row>
               <ion-col size="2" class="d-flex">
                 <div class="mx-auto fs-24" style="margin-top: 13px;">
-                  <ion-icon name="person" class="color-grey"></ion-icon>
+                  <ion-icon name="person" color="primary"></ion-icon>
                 </div>
               </ion-col>
               <ion-col size="10">
@@ -31,7 +31,7 @@
 
               <ion-col size="2" class="d-flex ion-margin-top">
                 <div class="mx-auto fs-24" style="margin-top: 13px;">
-                  <ion-icon name="key" class="color-grey"></ion-icon>
+                  <ion-icon name="key" color="primary"></ion-icon>
                 </div>
               </ion-col>
               <ion-col size="10">
@@ -50,7 +50,7 @@
                 </ion-text>
               </ion-col>
             </ion-row>
-            <ion-button expand="block" color="success" (click)="onLogin()">Login</ion-button>
+            <ion-button expand="block" color="secondary" (click)="onLogin()">Login</ion-button>
           </form>
         </div>
       </div>
