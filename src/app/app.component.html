@@ -1,10 +1,10 @@
 <ion-app>
   <ion-split-pane contentId="main-content">
-    <ion-menu contentId="main-content" type="overlay">
+    <ion-menu contentId="main-content" type="overlay" *ngIf="username">
       <ion-content>
         <ion-list id="inbox-list">
-          <ion-list-header>Name</ion-list-header>
-          <ion-note>name&#64;gmail.com</ion-note>
+          <ion-list-header>{{username}}</ion-list-header>
+          <!-- <ion-note>name&#64;gmail.com</ion-note> -->
           <!-- <ion-menu-toggle auto-hide="false">
             <ion-item lines="none" detail="false" routerLinkActive="selected" routerDirection="root"
               [routerLink]="['/dashboard']">

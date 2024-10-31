@@ -1,7 +1,8 @@
-import { Component, ElementRef, OnInit, Renderer2 } from '@angular/core';
+import { Component, ElementRef, Injector, OnInit, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
+import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-login',
@@ -11,14 +12,18 @@ import { ToastController } from '@ionic/angular';
 export class LoginPage implements OnInit {
   loginForm!: FormGroup;
   submitted = false;
+  appComponent!: AppComponent;
 
   constructor(
     private elRef: ElementRef,
     private renderer: Renderer2,
     private formBuilder: FormBuilder,
     private router: Router,
-    private toastController: ToastController
-  ) { }
+    private toastController: ToastController,
+    private injector: Injector
+  ) {
+    this.appComponent = this.injector.get(AppComponent);
+  }
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
@@ -39,9 +44,10 @@ export class LoginPage implements OnInit {
     if (this.loginForm.valid) {
       const username = this.loginForm.value.username;
       const password = this.loginForm.value.password;
-      if (username == "nayan" && password == "Nayan@123") {
+      if (username == "Nayan" && password == "Nayan@123") {
         localStorage.setItem("username", username);
         localStorage.setItem("password", password);
+        this.appComponent.checkLoginStatus();
         this.router.navigate(['/']);
 
         const toast = await this.toastController.create({

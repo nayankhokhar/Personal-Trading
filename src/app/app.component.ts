@@ -7,13 +7,8 @@ import { ToastController } from '@ionic/angular';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-
-  constructor(
-    private router: Router,
-    private toastController: ToastController
-  ) { }
-
-  public logoutConfirmation = [
+  username = "";
+  logoutConfirmation = [
     {
       text: 'Cancel',
       role: 'cancel'
@@ -24,12 +19,24 @@ export class AppComponent {
     },
   ];
 
+  constructor(
+    private router: Router,
+    private toastController: ToastController
+  ) {
+    this.checkLoginStatus();
+  }
+
+  checkLoginStatus() {
+    this.username = localStorage.getItem('username') || "";
+  }
+
   async logout(ev: any) {
     if (ev.detail.role == "confirm") {
       localStorage.removeItem("username");
       localStorage.removeItem("password");
+      this.username = "";
       this.router.navigate(['/login']);
-  
+
       const toast = await this.toastController.create({
         message: "Logged out successfully!",
         duration: 1500,
