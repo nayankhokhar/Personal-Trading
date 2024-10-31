@@ -1,18 +1,42 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { ToastController } from '@ionic/angular';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  public appPages = [
-    { title: 'Personal Trading', url: '', icon: 'list' },
-    { title: 'Logout', url: '', icon: 'log-out' }
-    // { title: 'Favorites', url: '/folder/favorites', icon: 'heart' },
-    // { title: 'Archived', url: '/folder/archived', icon: 'archive' },
-    // { title: 'Trash', url: '/folder/trash', icon: 'trash' },
-    // { title: 'Spam', url: '/folder/spam', icon: 'warning' },
+
+  constructor(
+    private router: Router,
+    private toastController: ToastController
+  ) { }
+
+  public logoutConfirmation = [
+    {
+      text: 'Cancel',
+      role: 'cancel'
+    },
+    {
+      text: 'Yes',
+      role: 'confirm'
+    },
   ];
-  // public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
-  constructor() {}
+
+  async logout(ev: any) {
+    if (ev.detail.role == "confirm") {
+      localStorage.removeItem("username");
+      localStorage.removeItem("password");
+      this.router.navigate(['/login']);
+  
+      const toast = await this.toastController.create({
+        message: "Logged out successfully!",
+        duration: 1500,
+        position: "bottom",
+        color: "success"
+      });
+      await toast.present();
+    }
+  }
 }
