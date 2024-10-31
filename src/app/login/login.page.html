@@ -17,7 +17,7 @@
               <ion-col size="10">
                 <div class="form-floating">
                   <ion-input formControlName="username" label="Username" label-placement="floating" fill="outline"
-                    placeholder="Enter username"></ion-input>
+                    placeholder="Enter username" type="text"></ion-input>
                 </div>
               </ion-col>
               <ion-col size="2" class="ion-no-padding">
@@ -38,7 +38,11 @@
               <ion-col size="10">
                 <div class="form-floating ion-margin-top">
                   <ion-input formControlName="password" label="Password" label-placement="floating" fill="outline"
-                    placeholder="Enter password"></ion-input>
+                    placeholder="Enter password" [type]="passwordType">
+                    <ion-button fill="clear" slot="end" aria-label="Show/hide" (click)=showHidePassword()>
+                      <ion-icon slot="icon-only" [name]="passwordIcon" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                  </ion-input>
                 </div>
               </ion-col>
               <ion-col size="2" class="ion-no-padding">

@@ -13,6 +13,8 @@ export class LoginPage implements OnInit {
   loginForm!: FormGroup;
   submitted = false;
   appComponent!: AppComponent;
+  passwordIcon = 'eye';
+  passwordType = 'password';
 
   constructor(
     private elRef: ElementRef,
@@ -39,12 +41,22 @@ export class LoginPage implements OnInit {
     });
   }
 
+  showHidePassword() {
+    this.passwordIcon = (this.passwordIcon == "eye")? "eye-off": "eye";
+    this.passwordType = (this.passwordType == "password")? "text": "password";
+  }
+
   async onLogin() {
     this.submitted = true;
     if (this.loginForm.valid) {
       const username = this.loginForm.value.username;
       const password = this.loginForm.value.password;
-      if (username == "Nayan" && password == "Nayan@123") {
+
+      if (
+        (username == "Nayan" && password == "Nayan@123") ||
+        (username == "Nilesh" && password == "Nilesh@123") ||
+        (username == "Maulik" && password == "Maulik@123")
+      ) {
         localStorage.setItem("username", username);
         localStorage.setItem("password", password);
         this.appComponent.checkLoginStatus();
