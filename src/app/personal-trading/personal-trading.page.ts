@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { NseIndiaService } from '../services/nseindia.service';
 import * as Papa from 'papaparse';
 import * as _ from 'lodash';
 import { ToastController } from '@ionic/angular';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-personal-trading',
@@ -23,11 +23,21 @@ export class PersonalTradingPage implements OnInit {
   pledgedDataFiltered: any = [];
 
   constructor(
-    private nseIndiaService: NseIndiaService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private http: HttpClient
   ) { }
 
   ngOnInit() {
+    // const url = 'https://www.nseindia.com/api/corporates-pit?index=equities&from_date=30-08-2024&to_date=30-11-2024'; // Replace with your API endpoint
+    // const headers = new HttpHeaders({
+    //   'User-Agent': 'PostmanRuntime/7.42.0',
+    // });
+
+    // this.http.get<any>(url, { headers }).subscribe({
+    //   next: (response) => console.log('API Response:', response),
+    //   error: (error) => console.error('Error:', error),
+    // });
+    // this.calculateProfit();
   }
 
   pickFile(event: any) {
@@ -164,5 +174,57 @@ export class PersonalTradingPage implements OnInit {
       color: "dark"
     });
     await toast.present();
+  }
+
+  calculateProfit() {
+    const buyLotSizes = [0.01, 0.01, 0.02, 0.03];
+    const pipSeries = [0.050,0.100, 0.180, 0.210, 0.240, 0.270, 0.300, 0.330, 0.360, 0.380, 0.410, 0.430, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450];
+    const profitMultiplier = 2;
+    const baseOpenPrice = 179.304;
+    const tradeData = [];
+
+    for (let i = 0; i < buyLotSizes.length; i++) {
+      const lotSize = buyLotSizes[i];
+      const pip = pipSeries[i];
+
+      const openPrice = i === 0
+        ? baseOpenPrice
+        : baseOpenPrice - pipSeries.slice(0, i).reduce((a, b) => a + b, 0);
+      const tp = openPrice + (pip * profitMultiplier);
+
+      tradeData.push({
+        lotSize: lotSize,
+        openPrice: parseFloat(openPrice.toFixed(3)),
+        tp: parseFloat(tp.toFixed(3)),
+      });
+      tradeData.forEach(trade => {
+        trade.tp = parseFloat(tp.toFixed(3));
+      });
+    }
+    
+    let netProfit = 0;
+    let totalMargin = 0;
+
+    tradeData.forEach((trade: any) => {
+      //For GBPJPY
+      const profit = parseFloat((((trade.tp - trade.openPrice) / 0.01) * (6.4 * trade.lotSize)).toFixed(2));
+      //      const profit = parseFloat(((trade.tp - trade.openPrice) * ((100000 * 0.01) / 1.25649) * trade.lotSize).toFixed(2));
+      // const profit = parseFloat((((trade.tp - trade.openPrice) * 1000 * trade.lotSize) / 1.27228).toFixed(2));
+
+      //const profit = parseFloat(((trade.tp - trade.openPrice) * 100000 * trade.lotSize).toFixed(5)); //GBPUSD
+
+      netProfit += profit;
+      trade.profit = profit;
+
+      const margin = parseFloat(((trade.lotSize * 100000 * 1.25649) / 1000).toFixed(2)); //GBPJPY
+      // const margin = parseFloat(((trade.openPrice * trade.lotSize) * 100).toFixed(5)); //GBPUSD
+
+      totalMargin += margin;
+      trade.margin = margin;
+    });
+
+    console.log(tradeData);
+    console.log("Net Profit: " + netProfit.toFixed(2));
+    console.log("Total Margin: " + totalMargin.toFixed(2));
   }
 }
