@@ -86,6 +86,8 @@ export class PersonalTradingPage implements OnInit {
   }
 
   showAllData() {
+    console.log("All Data: ", this.insiderTrading);
+    
     // Insider-Trading
     const marketPurchaseIsiderTrading = _.filter(this.insiderTrading, item => ((item['CATEGORY OF PERSON \n'] == "Promoters" || item['CATEGORY OF PERSON \n'] == "Promoter Group") && (item['MODE OF ACQUISITION \n'] == "Market Purchase" || item['MODE OF ACQUISITION \n'] == "Market Sale"))
     );
@@ -108,6 +110,7 @@ export class PersonalTradingPage implements OnInit {
         Average_Purchase: (totalPurchase / totalShare)
       };
     }).orderBy('VALUE OF SECURITY (ACQUIRED/DISPLOSED) \n', 'desc').value();
+    console.log("Insider Trading: ", this.insiderTradingFiltered);
 
     // Shareholding-Patterns
     this.shareholdingPatternsFiltered = _.filter(this.insiderTradingFiltered, (insider: any) => {
@@ -126,6 +129,7 @@ export class PersonalTradingPage implements OnInit {
         return true;
       }
     });
+    console.log("Shareholding Patterns: ", this.shareholdingPatternsFiltered);
 
     // SAST-Reg29
     const SASTReg29SellData = _(this.SASTReg29)
@@ -140,6 +144,7 @@ export class PersonalTradingPage implements OnInit {
     this.SASTReg29Filtered = _.filter(this.shareholdingPatternsFiltered, (insider) =>
       !_.some(SASTReg29SellData, { COMPANY: insider.COMPANY })
     );
+    console.log("SASTReg29: ", this.SASTReg29Filtered);
 
     // Pledged-Data
     let pledgeFilter = _.filter(this.pledgedData, (item) => {
@@ -149,7 +154,7 @@ export class PersonalTradingPage implements OnInit {
     this.pledgedDataFiltered = _.filter(this.SASTReg29Filtered, (item) => {
       return !_.some(pledgeFilter, { 'NAME OF COMPANY': item.COMPANY });
     });
-    console.log(this.pledgedDataFiltered);
+    console.log("Pledged: " , this.pledgedDataFiltered);
   }
 
   convertToCrores(value: number): string {
@@ -178,7 +183,7 @@ export class PersonalTradingPage implements OnInit {
 
   calculateProfit() {
     const buyLotSizes = [0.01, 0.01, 0.02, 0.03];
-    const pipSeries = [0.050,0.100, 0.180, 0.210, 0.240, 0.270, 0.300, 0.330, 0.360, 0.380, 0.410, 0.430, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450];
+    const pipSeries = [0.050, 0.100, 0.180, 0.210, 0.240, 0.270, 0.300, 0.330, 0.360, 0.380, 0.410, 0.430, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450, 0.450];
     const profitMultiplier = 2;
     const baseOpenPrice = 179.304;
     const tradeData = [];
@@ -201,7 +206,7 @@ export class PersonalTradingPage implements OnInit {
         trade.tp = parseFloat(tp.toFixed(3));
       });
     }
-    
+
     let netProfit = 0;
     let totalMargin = 0;
 
