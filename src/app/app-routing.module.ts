@@ -13,7 +13,11 @@ const routes: Routes = [
     path: 'login',
     loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule),
     canActivate: [GuestGuard]
+  },  {
+    path: 'stock-fibo-average',
+    loadChildren: () => import('./calculator/stock-fibo-average/stock-fibo-average.module').then( m => m.StockFiboAveragePageModule)
   }
+
 ];
 
 @NgModule({

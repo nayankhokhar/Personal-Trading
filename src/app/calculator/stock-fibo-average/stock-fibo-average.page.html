@@ -1,0 +1,34 @@
+<ion-content [fullscreen]="true" color="dark">
+    <table class="table table-striped table-dark">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Price</th>
+                <th scope="col">Shares Bought</th>
+                <th scope="col">Total Shares</th>
+                <th scope="col">Investment</th>
+                <th scope="col">Total Investment</th>
+                <th scope="col">Down Initial %</th>
+                <th scope="col">Down Previous %</th>
+                <th scope="col">Profit %</th>
+                <th scope="col">Profit Price</th>
+                <th scope="col">Profit Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of averageData; let i = index">
+                <th scope="row">{{ i + 1 }}</th>
+                <td>{{ data.price }}</td>
+                <td class="text-primary">{{ data.sharesBought }}</td>
+                <td class="text-primary">{{ data.totalShares }}</td>
+                <td class="text-warning">{{ data.investment }}</td>
+                <td class="text-warning">{{ data.totalInvestment }}</td>
+                <td class="text-danger">-{{ data.downFromBuyPrice }}%</td>
+                <td class="text-danger">-{{ data.downPercentage }}%</td>
+                <td class="text-success">+{{ data.profitPercentage }}%</td>
+                <td>{{ data.profitPrice }}</td>
+                <td class="text-success">{{ data.profitAmount }}</td>
+            </tr>
+        </tbody>
+    </table>
+</ion-content>
