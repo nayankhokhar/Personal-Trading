@@ -1,0 +1,151 @@
+<ion-content [fullscreen]="true" color="dark">
+    <div class="text-end m-2">
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                {{divYear}}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" (click)="selectYear('')">All</a></li>
+                <li><a class="dropdown-item" (click)="selectYear('2025')">2025</a></li>
+                <li><a class="dropdown-item" (click)="selectYear('2024')">2024</a></li>
+                <li><a class="dropdown-item" (click)="selectYear('2023')">2023</a></li>
+                <li><a class="dropdown-item" (click)="selectYear('2022')">2022</a></li>
+                <li><a class="dropdown-item" (click)="selectYear('2021')">2021</a></li>
+                <li><a class="dropdown-item" (click)="selectYear('2020')">2020</a></li>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table table-bordered table-dark">
+            <thead>
+                <tr scope="col">
+                    <ng-container *ngFor="let header of tableHeaders">
+                        <th class="cursor-pointer text-nowrap" [ngClass]="{ 'sticky-col': header.title === 'Company' }"
+                            (click)="sortData(header.property)">
+                            <span class="column-title">{{ header.title }}</span>
+                        </th>
+                    </ng-container>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let data of stocks; let i = index">
+                    <tr>
+                        <td class="test-start">{{ data.NO }}</td>
+                        <td class="test-start sticky-col">{{ data.COMPANY_NAME }}</td>
+                        <!-- <td class="test-start">{{data.MAIN_SECTOR || '-'}} : {{ data.SUB_SECTOR || '-' }}</td> -->
+                        <td>{{ formatIndianCurrency(data.CURRENT_PRICE) || '-' }}</td>
+                        <td class="bg-danger">{{ formatIndianCurrency(data['52H']) || '-'}} / {{ data['52H_PERCENTAGE']?
+                            formatIndianCurrency(data['52H_PERCENTAGE'])+'%': '-'}}</td>
+                        <td class="bg-success">{{ formatIndianCurrency(data['52L']) || '-'}} / {{
+                            data['52L_PERCENTAGE']? formatIndianCurrency(data['52L_PERCENTAGE'])+'%': '-'}}</td>
+                        <td>{{ formatIndianCurrency(data['200_DAY_AVG']) || '-'}}</td>
+                        <td>{{ formatIndianCurrency(data['150_DAY_AVG']) || '-'}}</td>
+                        <td>{{ formatIndianCurrency(data['50_DAY_AVG']) || '-'}}</td>
+                        <td>{{ formatIndianCurrency(data['30_DAY_AVG']) || '-'}}</td>
+                        <td>{{ formatIndianCurrency(data.MARKET_CAP) || '-'}}</td>
+                        <td
+                            [ngClass]="{'bg-danger': data.PE_RATIO > 25 || data.PE_RATIO > data.SECTOR_PE,'bg-success': data.PE_RATIO <= 25 && data.PE_RATIO <= data.SECTOR_PE}">
+                            {{ data.PE_RATIO || '-'}} / {{ data.SECTOR_PE || '-'}}
+                        </td>
+                        <td>{{ formatIndianCurrency(data.BOOK_VALUE) || '-' }}</td>
+                        <td [ngClass]="{'bg-success': data.PB_RATIO < 3,'bg-danger': data.PB_RATIO >= 3}">
+                            {{ data.PB_RATIO || '-'}}
+                        </td>
+
+                        <!-- Dividends Quarterly-->
+                        <!-- <td class="p-0">
+                            <table class="table table-bordered table-dark table-sm text-end mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="pad-1">Date</th>
+                                        <th class="pad-1">Amount</th>
+                                        <th class="pad-1">Price</th>
+                                        <th class="pad-1">Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let dividend of data.DIVIDENDS.slice(0, 6)">
+                                        <td class="pad-1">{{ dividend.DIV_EX_DATE }}</td>
+                                        <td class="pad-1">{{ dividend.DIV_AMOUNT }}</td>
+                                        <td class="pad-1">{{ dividend.SHARE_PRICE }}</td>
+                                        <td class="pad-1">{{ dividend.DIV_PERCENTAGE }}%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td> -->
+
+                        <td class="p-0">
+                            <ng-container
+                                *ngFor="let dividend of data.YEARLY_DIVIDENDS.slice(0, 6); let i = index; let last = last">
+                                <div class="p-2" *ngIf="!divYear || dividend.YEAR == divYear">{{ dividend.YEAR}}</div>
+                            </ng-container>
+                        </td>
+                        <td class="p-0">
+                            <ng-container
+                                *ngFor="let dividend of data.YEARLY_DIVIDENDS.slice(0, 6); let i = index; let last = last">
+                                <div class="p-2" *ngIf="!divYear || dividend.YEAR == divYear" [ngClass]="{
+                                    'bg-success': !last && dividend.SUM_DIV_PRICE !== null && +dividend.SUM_DIV_PRICE > +data.YEARLY_DIVIDENDS[i+1].SUM_DIV_PRICE,
+                                    'bg-danger': !last && dividend.SUM_DIV_PRICE !== null && +dividend.SUM_DIV_PRICE <= +data.YEARLY_DIVIDENDS[i+1].SUM_DIV_PRICE
+                                  }">{{ dividend.SUM_DIV_PRICE}}</div>
+                            </ng-container>
+                        </td>
+                        <td class="p-0">
+                            <ng-container
+                                *ngFor="let dividend of data.YEARLY_DIVIDENDS.slice(0, 6); let i = index; let last = last">
+                                <div class="p-2" *ngIf="!divYear || dividend.YEAR == divYear" [ngClass]="{
+                                    'bg-success': !last && dividend.AVG_SHARE_PRICE !== null && +dividend.AVG_SHARE_PRICE > +data.YEARLY_DIVIDENDS[i+1].AVG_SHARE_PRICE,
+                                    'bg-danger': !last && dividend.AVG_SHARE_PRICE !== null && +dividend.AVG_SHARE_PRICE <= +data.YEARLY_DIVIDENDS[i+1].AVG_SHARE_PRICE
+                                  }">{{ dividend.AVG_SHARE_PRICE}}</div>
+                            </ng-container>
+                        </td>
+                        <td class="p-0">
+                            <ng-container
+                                *ngFor="let dividend of data.YEARLY_DIVIDENDS.slice(0, 6); let i = index; let last = last">
+                                <div class="p-2" *ngIf="!divYear || dividend.YEAR == divYear" [ngClass]="{
+                                  'bg-success': !last && dividend.DIV_PERCENTAGE !== null && +dividend.DIV_PERCENTAGE > +data.YEARLY_DIVIDENDS[i+1].DIV_PERCENTAGE,
+                                  'bg-danger': !last && dividend.DIV_PERCENTAGE !== null && +dividend.DIV_PERCENTAGE <= +data.YEARLY_DIVIDENDS[i+1].DIV_PERCENTAGE
+                                }">
+                                    {{ dividend.DIV_PERCENTAGE }}
+                                </div>
+                            </ng-container>
+                        </td>
+                        <td class="p-0">
+                            <ng-container
+                                *ngFor="let dividend of data.YEARLY_DIVIDENDS.slice(0, 6); let i = index; let last = last">
+                                <div class="p-2" *ngIf="!divYear || dividend.YEAR == divYear" [ngClass]="{
+                                    'bg-success': !last && dividend.CURR_DIV_PERCENTAGE !== null && +dividend.CURR_DIV_PERCENTAGE > +data.YEARLY_DIVIDENDS[i+1].CURR_DIV_PERCENTAGE,
+                                    'bg-danger': !last && dividend.CURR_DIV_PERCENTAGE !== null && +dividend.CURR_DIV_PERCENTAGE <= +data.YEARLY_DIVIDENDS[i+1].CURR_DIV_PERCENTAGE
+                                  }">{{ dividend.CURR_DIV_PERCENTAGE}}</div>
+                            </ng-container>
+                        </td>
+                        <td class="p-0">
+                            <ng-container
+                                *ngFor="let dividend of data.YEARLY_DIVIDENDS.slice(0, 6); let i = index; let last = last">
+                                <div class="p-2" *ngIf="!divYear || dividend.YEAR == divYear" [ngClass]="{
+                                    'bg-success': !last && dividend.YEARLY_DIV_PER_GROWTH !== null && +dividend.YEARLY_DIV_PER_GROWTH > +data.YEARLY_DIVIDENDS[i+1].YEARLY_DIV_PER_GROWTH,
+                                    'bg-danger': !last && dividend.YEARLY_DIV_PER_GROWTH !== null && +dividend.YEARLY_DIV_PER_GROWTH <= +data.YEARLY_DIVIDENDS[i+1].YEARLY_DIV_PER_GROWTH
+                                  }">{{ dividend.YEARLY_DIV_PER_GROWTH}}</div>
+                            </ng-container>
+                        </td>
+                        <td class="p-0">
+                            <ng-container
+                                *ngFor="let dividend of data.YEARLY_DIVIDENDS.slice(0, 6); let i = index; let last = last">
+                                <div class="p-2" *ngIf="!divYear || dividend.YEAR == divYear" [ngClass]="{
+                                    'bg-success': !last && dividend.DIV_COUNT !== null && +dividend.DIV_COUNT > +data.YEARLY_DIVIDENDS[i+1].DIV_COUNT,
+                                    'bg-danger': !last && dividend.DIV_COUNT !== null && +dividend.DIV_COUNT <= +data.YEARLY_DIVIDENDS[i+1].DIV_COUNT
+                                  }">{{ dividend.DIV_COUNT}}</div>
+                            </ng-container>
+                        </td>
+                        <td class="p-0">
+                            <ng-container
+                                *ngFor="let dividend of data.YEARLY_DIVIDENDS.slice(0, 6); let i = index; let last = last">
+                                <div class="p-2" *ngIf="!divYear || dividend.YEAR == divYear">{{ dividend.MONTHS}}</div>
+                            </ng-container>
+                        </td>
+                        <td>{{ data['NOTE'] || '-'}}</td>
+                </ng-container>
+            </tbody>
+        </table>
+    </div>
+</ion-content>

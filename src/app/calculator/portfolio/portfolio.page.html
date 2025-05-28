@@ -1,0 +1,43 @@
+<ion-content [fullscreen]="true" color="dark">
+  <div class="text-end">
+    <button class="btn btn-primary m-2" (click)="hideShowHoldings()">Holdings</button>
+  </div>
+
+  <table class="table table-dark table-bordered">
+    <thead>
+      <tr>
+        <th>Stock Name</th>
+        <th>Total Invested</th>
+        <th>Portfolio %</th>
+        <th *ngIf="isShowHoldings">Holdings</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let stock of portfolio">
+        <td>{{ stock.name }}</td>
+        <td class="text-end">₹{{ formatIndianCurrency(stock.total) }}</td>
+        <td class="text-end">{{ stock.percentage }}</td>
+        <td class="p-0" *ngIf="isShowHoldings">
+          <table class="table table-bordered table-dark table-sm text-end mb-0">
+            <thead>
+              <tr>
+                <th class="bg-secondary">Qty</th>
+                <th class="bg-secondary">Date</th>
+                <th class="bg-secondary">Price</th>
+                <th class="bg-secondary">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let h of stock.holding">
+                <td>{{ h.qty }}</td>
+                <td>{{ h.date }}</td>
+                <td>₹{{ formatIndianCurrency(h.price) }}</td>
+                <td>₹{{ formatIndianCurrency(h.qty * h.price) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ion-content>
